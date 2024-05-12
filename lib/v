@@ -1,0 +1,157 @@
+ Container(
+            height : 350,
+
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/45.png'), fit: BoxFit.cover,),
+                borderRadius: BorderRadius.circular(20),
+            ),
+            margin: EdgeInsets.only(left: 5.0,right: 5.0,top: 30.0,bottom: 10.0,),
+            padding:EdgeInsets.only(left: 40.0,),
+            child: Column(
+              children: [
+                SizedBox(height:50 ,),
+                Image.asset('assets/images/17.png' ,),
+                
+                
+              ],
+            ),
+          ),
+
+
+
+
+          Card(
+                          elevation: 4,
+                          child: ListTile(
+  title: Text(
+    _meetings[index]['title'],
+    style: const TextStyle(fontWeight: FontWeight.bold),
+  ),
+  subtitle: Text(
+    "${_meetings[index]['date']} a ${_meetings[index]['time']}",
+  ),
+  // Additional line for displaying location
+  trailing: Text(_meetings[index]['location']),
+),
+
+
+
+
+
+
+ child: ListView.separated(
+  separatorBuilder: (BuildContext context, int index) => const Divider(),
+  itemCount: _enCoursMeetings?.length ?? 0, // Use null-aware operator to handle null _enCoursMeetings
+  itemBuilder: (BuildContext context, int index) {
+    return Card(
+      elevation: 4,
+      child: ListTile(
+        title: Text(
+          _enCoursMeetings?[index]['title'] ?? '', // Use null-aware operator to handle null _enCoursMeetings and null title
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(_enCoursMeetings?[index]['date'] ?? ''), // Use null-aware operator to handle null _enCoursMeetings and null date
+      ),
+    );
+  },
+),
+
+
+
+child: ListView.separated(
+                      separatorBuilder: (BuildContext context, int index) => const Divider(),
+                      itemCount: _termineesMeetings.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                          elevation: 4,
+                          child: ListTile(
+                            title: Text(
+                              _termineesMeetings[index]['title'],
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(_termineesMeetings[index]['date']),
+                          ),
+                        );
+                      },
+                    ),
+
+
+ Color.fromRGBO(250,166,66,1),
+
+ Text("Bibliothèque \n numérique",style: TextStyle(fontFamily: 'Sora',fontSize: 25,fontWeight: FontWeight.bold, color: Colors.white,),),
+ Text("Bourse",style: TextStyle(fontFamily: 'Sora',fontSize: 25,fontWeight: FontWeight.bold, color: Colors.white,),),
+
+
+
+ return Card(
+                      elevation: 4,
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Title: ${vote['title']}',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            SizedBox(height: 8),
+                            Text('Description: ${vote['description']}', style: TextStyle(fontSize: 16)),
+                            SizedBox(height: 8),
+                            Text('Closing Date: ${vote['closing_date']}', style: TextStyle(fontSize: 16)),
+                            SizedBox(height: 16),
+                            Text('Options:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: options.map<Widget>((option) {
+                                if (option is String) {
+                                  return Row(
+                                    children: [
+                                      Radio(
+                                        value: option,
+                                        groupValue: vote['selected_option'],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            vote['selected_option'] = value;
+                                          });
+                                        },
+                                      ),
+                                      Text(option, style: TextStyle(fontSize: 16)),
+                                    ],
+                                  );
+                                } else if (option is Map) {
+                                  final optionValue = option['value'];
+                                  return Row(
+                                    children: [
+                                      Radio(
+                                        value: optionValue,
+                                        groupValue: vote['selected_option'],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            vote['selected_option'] = value;
+                                          });
+                                        },
+                                      ),
+                                      Text(optionValue, style: TextStyle(fontSize: 16)),
+                                    ],
+                                  );
+                                }
+                                return Container();
+                              }).toList(),
+                            ),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                if (vote['selected_option'] != null) {
+                                  _submitVote(vote['id'], vote['selected_option']);
+                                } else {
+                                  print('Please select an option');
+                                }
+                              },
+                              child: Text('Vote', style: TextStyle(fontSize: 18)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
