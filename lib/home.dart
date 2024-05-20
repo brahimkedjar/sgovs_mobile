@@ -1,3 +1,6 @@
+import 'package:sgovs/bibliotheques.dart';
+import 'package:sgovs/bourse/bourse.dart';
+import 'package:sgovs/chat/chat.dart';
 import 'package:sgovs/login.dart';
 import 'package:sgovs/reunion.dart';
 import 'package:sgovs/vote.dart';
@@ -39,29 +42,99 @@ class _HomeState extends State<Home> {
       MaterialPageRoute(builder: (context) => const Login()),
     );
   }
+  Future<Map<String, dynamic>> getParticipantData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String name = prefs.getString('name') ?? ''; // Replace 'John Doe' with default value
+    String prename = prefs.getString('prename') ?? ''; // Replace 'John Doe' with default value
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-        automaticallyImplyLeading: false, // This line removes the back button
-        actions: [
-          if (isLoggedIn)
-            IconButton(
-              onPressed: () {
-                logout();
-              },
-              icon: const Icon(Icons.logout),
-            ),
+  String post = prefs.getString('post') ?? ''; // Replace 'Software Engineer' with default value
+  return {'name': name, 'post': post,'prename': prename};
+}
+
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      automaticallyImplyLeading: false, // This line removes the back button
+      actions: [
+        if (isLoggedIn)
+        IconButton(
+            onPressed: () {
+             Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) =>  ChatPage()),
+    );
+            },
+            icon: const Icon(Icons.chat),
+          ),
+          IconButton(
+            onPressed: () {
+              logout();
+            },
+            icon: const Icon(Icons.logout),
+          ),
+      ],
+      title: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.blue,// Replace with actual profile image
+          ),
+          SizedBox(width: 10), // Add some spacing between the profile image and text
+          FutureBuilder(
+            future: getParticipantData(), // Call a function to retrieve participant data from SharedPreferences
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator(); // Show a loading indicator while data is being fetched
+              } else {
+                // Once data is fetched, display participant's name and post
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          snapshot.data!['name'],
+                           // Retrieve name from snapshot data
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          " "
+                        ),
+                        Text(
+                      snapshot.data!['prename'],
+                       // Retrieve name from snapshot data
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                      ],
+                    ),
+                    Text(
+                      snapshot.data!['post'], // Retrieve post from snapshot data
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+    ),
+    body: SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
               Container(
   height: 200,
   decoration: BoxDecoration(
@@ -117,7 +190,7 @@ class _HomeState extends State<Home> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Reunion()),
+                        MaterialPageRoute(builder: (context) =>  const Reunion()),
                       );
                     },
                   ),
@@ -155,7 +228,7 @@ class _HomeState extends State<Home> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const MyApp()),
+                        MaterialPageRoute(builder: (context) => const ParticipantVotesPage()),
                       );
                     },
                   ),
@@ -196,7 +269,12 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>  ParticipantLibraryPage()),
+                      );
+                    },
                   ),
                   GestureDetector(
                     child: Container(
@@ -229,7 +307,12 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>  Bourse()),
+                      );
+                    },
                   ),
                 ],
               ),

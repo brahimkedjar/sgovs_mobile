@@ -36,54 +36,62 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> login(BuildContext context) async {
-    String email = emailController.text;
-    String password = passwordController.text;
+  String email = emailController.text;
+  String password = passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
-      return;
-    }
+  if (email.isEmpty || password.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter email and password')),
+    );
+    return;
+  }
 
-    var url = Uri.parse('http://regestrationrenion.atwebpages.com/login.php');
+  var url = Uri.parse('http://regestrationrenion.atwebpages.com/login.php');
 
-    try {
-      var response = await http.post(
-        url,
-        body: {
-          'email': email,
-          'password': password,
-        },
-      );
+  try {
+    var response = await http.post(
+      url,
+      body: {
+        'email': email,
+        'password': password,
+      },
+    );
 
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(response.body);
-        if (jsonResponse['status'] == 'success') {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setInt('participant_id', jsonResponse['participant_id']);
-          SharedPreferences prefs1 = await SharedPreferences.getInstance();
-          await prefs1.setBool('isLoggedIn', true);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) =>  const Home()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid email or password')),
-          );
-        }
+    if (response.statusCode == 200) {
+      print("llllllllllllllllll:${response.body}");
+      var jsonResponse = json.decode(response.body);
+      if (jsonResponse['status'] == 'success') {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setInt('participant_id', jsonResponse['participant_id']);
+        SharedPreferences prefs1 = await SharedPreferences.getInstance();
+        await prefs1.setBool('isLoggedIn', true);
+        
+        // Save participant data in SharedPreferences
+        prefs.setString('name', jsonResponse['name']);
+        prefs.setString('prename', jsonResponse['prename']);
+        prefs.setString('post', jsonResponse['post']);
+        prefs.setString('utilisateur', jsonResponse['utilisateur']);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) =>  const Home()),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to login. Please try again later.')),
+          const SnackBar(content: Text('Invalid email or password')),
         );
       }
-    } catch (e) {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred')),
+        const SnackBar(content: Text('Failed to login. Please try again later.')),
       );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('An error occurred')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
